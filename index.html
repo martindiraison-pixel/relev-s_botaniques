@@ -365,6 +365,14 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
 .graphFitBtn{display:none}
 .svgBox.fitWidth{overflow-x:hidden}
 .svgBox.fitWidth svg{min-width:0!important;width:100%!important;height:auto!important}
+/* Écogrammes : 3 blocs empilés + barre d'actions près du graphe (boutons icônes) */
+.settingsStack{display:flex;flex-direction:column;gap:10px}
+.graphActions{display:flex;gap:6px;justify-content:flex-end;align-items:center;margin:4px 0 8px}
+.iconBtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:8px;line-height:0}
+.iconBtn svg{flex:0 0 auto}
+.graphFitBtn[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+/* pastille version : complète au bureau, courte sur mobile */
+.versionPill .vShort{display:none}
 @media(max-width:760px){
   /* --- P1 : header réduit à une barre fine collante (~44px) --- */
   :root{--topbar-h:46px}
@@ -373,7 +381,10 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
   .appLogo{width:30px!important;height:30px!important;border-radius:8px!important}
   .headerTop h1{font-size:1.06rem!important;white-space:nowrap;flex:0 0 auto}
   .headerDesc{display:none!important}
-  .versionPill{display:none!important}
+  /* petite pastille version discrète, juste le numéro (ex. v43) */
+  .versionPill{display:inline-flex!important;padding:2px 7px;font-size:.64rem;background:rgba(255,255,255,.14);color:rgba(255,255,255,.72);flex:0 0 auto}
+  .versionPill .vFull{display:none}
+  .versionPill .vShort{display:inline}
   /* bouton 👤 qui déplie la connexion */
   .authToggle{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;margin-left:auto;width:36px;height:36px;padding:0;border-radius:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer}
   .authToggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8}
@@ -409,6 +420,8 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
   .compactToolbar > .switch,.compactToolbar > button{flex:0 0 auto;width:auto!important}
   /* bouton bascule du graphique visible sur mobile */
   .graphFitBtn{display:inline-flex;align-items:center;gap:5px}
+  /* boutons icônes : compacts même dans une toolbar en grille/pleine largeur */
+  .toolbar .iconBtn,.iconBtn{width:auto!important;flex:0 0 auto;min-width:0;justify-self:start;align-self:center}
   /* sélecteurs de relevés repliables : liste plus courte, actions compactes */
   .selectorDetails > .selectorActions{display:flex;gap:5px}
   .selectorDetails > .selectorActions .miniBtn{flex:1 1 0;min-width:0;padding:6px 4px}
@@ -417,6 +430,11 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
   .releveBar{gap:6px}
   .releveBar .relSelectWrap{width:100%}
   .releveBar > button{flex:1 1 0;min-width:0}
+  /* --- P9 : récupérer un peu de largeur (marges latérales réduites) --- */
+  main{padding-left:6px!important;padding-right:6px!important}
+  .view{padding-left:6px!important;padding-right:6px!important}
+  .graphActions{margin-top:2px}
+  .graphActions .iconBtn{min-height:38px}
 }
 /* --- P5 : très petits écrans (<360px) — évite l'entassement des 7 onglets --- */
 @media(max-width:360px){
@@ -436,7 +454,7 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
     <img class="appLogo" src="./icons/icon.svg" alt="" aria-hidden="true">
     <h1>PhytoScope</h1>
     <p class="headerDesc">Application de saisie de relevés phytosociologiques et de visualisation d’indicateurs écologiques associés.</p>
-    <span class="versionPill">bêta · <span id="appVersionTag"></span></span>
+    <span class="versionPill"><span class="vFull">bêta · <span id="appVersionTag"></span></span><span class="vShort" id="appVersionShort"></span></span>
     <label for="authToggleCb" class="authToggle" role="button" tabindex="0" aria-label="Afficher la connexion" title="Connexion">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 19a6.5 6.5 0 0 1 13 0" stroke-linecap="round"/></svg>
     </label>
@@ -523,7 +541,7 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
     </div>
 
     <div class="card graphWorkspace">
-      <div class="toolbar compactToolbar"><div class="grow"></div><label class="small muted">Strate</label><select id="analysisStratum"></select><label class="small muted">Étiquettes</label><select id="gradientLabelMode"><option value="hover" selected>Survol / clic</option><option value="short">Abrégées</option><option value="initials">Initiales</option><option value="none">Masquées</option></select><label class="switch compactSwitch small"><input type="checkbox" class="colorBlindToggle">Daltoniens</label><button class="secondary miniBtn" id="exportGradientsPng">Tout exporter</button></div>
+      <div class="toolbar compactToolbar"><div class="grow"></div><label class="small muted">Strate</label><select id="analysisStratum"></select><label class="small muted">Étiquettes</label><select id="gradientLabelMode"><option value="hover" selected>Survol / clic</option><option value="short">Abrégées</option><option value="initials">Initiales</option><option value="none">Masquées</option></select><label class="switch compactSwitch small"><input type="checkbox" class="colorBlindToggle">Daltoniens</label><button class="secondary iconBtn" id="exportGradientsPng" aria-label="Tout exporter en PNG" title="Tout exporter en PNG"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v10m0 0 3.5-3.5M12 13 8.5 9.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke-linecap="round"/></svg></button></div>
       <div class="selectorPanel noPrint slimPanel"><details class="selectorDetails" open><summary class="selectorSummary"><strong class="small">Relevés affichés</strong><span class="selCount"></span></summary><div class="selectorActions"><button class="ghost miniBtn" data-kind="gradient" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="gradient" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="gradient" data-select-action="none">Aucun</button></div><input class="panelSearch releveFilter" data-kind="gradient" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="gradientReleveChecks" class="checkList selectableReleves"></div></details></div>
       <div class="legend legendHelp slimLegend"><span class="key"><span class="pointLegend" style="color:#2f6b3e"></span>Espèce</span><span class="key"><span class="lineLegend" style="color:#2f6b3e"></span>Moyenne pondérée</span><span class="key"><span class="lineLegend dashed" style="color:#2f6b3e"></span>Moyenne simple</span><span class="key"><span class="bandLegend" style="color:#2f6b3e"></span>± écart-type pondéré</span></div>
       <p class="small muted noPrint" style="margin:.2rem 0 .8rem">Chaque gradient peut être replié/déplié. Utiliser le sélecteur de couleur des relevés pour harmoniser les figures.</p>
@@ -538,11 +556,11 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
 
     <div class="split">
       <div class="card graphWorkspace">
-        <div class="toolbar compactToolbar"><div class="grow"></div><button type="button" class="secondary miniBtn graphFitBtn" data-target="#scatterSvg" aria-pressed="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" stroke-linecap="round"/></svg><span class="fitLabel">Vue d'ensemble</span></button><button class="secondary miniBtn" id="exportScatterPng">Exporter PNG</button></div>
-        <div class="settingsGrid noPrint">
-          <div class="selectorPanel slimPanel"><details class="selectorDetails" open><summary class="selectorSummary"><strong class="small">Données affichées</strong><span class="selCount"></span></summary><div class="selectorActions"><button class="ghost miniBtn" data-kind="scatter" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="scatter" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="scatter" data-select-action="none">Aucun</button></div><input class="panelSearch releveFilter" data-kind="scatter" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="scatterReleveChecks" class="checkList selectableReleves"></div></details><div class="axisControlRow"><label class="small muted">Axe X<select id="xGrad"></select></label><label class="small muted">Axe Y<select id="yGrad"></select></label><label class="small muted">Strate<select id="scatterStratum"></select></label></div></div>
-          <div class="selectorPanel slimPanel"><div class="selectorPanelHeader"><strong class="small">Rendu graphique</strong></div><div class="axisControlRow"><label class="small muted">Type<select id="scatterMode"><option value="species">Espèces</option><option value="releves">Moyennes + enveloppe</option></select></label><label class="small muted">Étiquettes<select id="scatterPointLabels"><option value="hover" selected>Survol / clic</option><option value="short">Abrégées filtrées</option><option value="none">Masquées</option></select></label><label class="small muted">Enveloppe<select id="scatterEnvelopeMode"><option value="hull" selected>Bornage floristique</option><option value="sd">Dispersion ± 1 σ</option><option value="both">Bornage + dispersion</option><option value="none">Aucune</option></select></label></div><p class="small muted" style="margin:.45rem 0 0">Astuce : cliquer sur le nom des axes dans le graphique pour faire défiler les indices.</p></div>
+        <div class="settingsStack noPrint">
+          <div class="selectorPanel slimPanel"><details class="selectorDetails" open><summary class="selectorSummary"><strong class="small">Relevés affichés</strong><span class="selCount"></span></summary><div class="selectorActions"><button class="ghost miniBtn" data-kind="scatter" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="scatter" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="scatter" data-select-action="none">Aucun</button></div><input class="panelSearch releveFilter" data-kind="scatter" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="scatterReleveChecks" class="checkList selectableReleves"></div></details></div><div class="selectorPanel slimPanel"><details class="selectorDetails" open><summary class="selectorSummary"><strong class="small">Axes &amp; strate</strong></summary><div class="axisControlRow"><label class="small muted">Axe X<select id="xGrad"></select></label><label class="small muted">Axe Y<select id="yGrad"></select></label><label class="small muted">Strate<select id="scatterStratum"></select></label></div></details></div>
+          <div class="selectorPanel slimPanel"><details class="selectorDetails" open><summary class="selectorSummary"><strong class="small">Rendu graphique</strong></summary><div class="axisControlRow"><label class="small muted">Type<select id="scatterMode"><option value="species">Espèces</option><option value="releves">Moyennes + enveloppe</option></select></label><label class="small muted">Étiquettes<select id="scatterPointLabels"><option value="hover" selected>Survol / clic</option><option value="short">Abrégées filtrées</option><option value="none">Masquées</option></select></label><label class="small muted">Enveloppe<select id="scatterEnvelopeMode"><option value="hull" selected>Bornage floristique</option><option value="sd">Dispersion ± 1 σ</option><option value="both">Bornage + dispersion</option><option value="none">Aucune</option></select></label></div><p class="small muted" style="margin:.45rem 0 0">Astuce : cliquer sur le nom des axes dans le graphique pour faire défiler les indices.</p></details></div>
         </div>
+        <div class="graphActions noPrint"><button type="button" class="secondary iconBtn graphFitBtn" data-target="#scatterSvg" aria-pressed="false" aria-label="Vue d'ensemble" title="Vue d'ensemble"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" stroke-linecap="round"/></svg></button><button class="secondary iconBtn" id="exportScatterPng" aria-label="Exporter en PNG" title="Exporter en PNG"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v10m0 0 3.5-3.5M12 13 8.5 9.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke-linecap="round"/></svg></button></div>
         <div id="scatterLegend" class="chartLegend"></div>
         <div id="scatterSvg" class="svgBox"></div>
       </div>
@@ -574,20 +592,20 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
     <div class="card">
       <div class="toolbar">
         <label class="small muted">Strate analysée</label><select id="wetlandStratum"></select>
-        <button class="secondary miniBtn" id="exportWetlandPng">Exporter la jauge PNG</button>
+        <button class="secondary iconBtn" id="exportWetlandPng" aria-label="Exporter la jauge en PNG" title="Exporter la jauge en PNG"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3v10m0 0 3.5-3.5M12 13 8.5 9.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke-linecap="round"/></svg></button>
       </div>
       <p class="small muted" style="margin-top:0">Module de pré-diagnostic : indicateur Ellenberg d'humidité édaphique et critère floristique réglementaire. Les calculs restent à valider par expertise de terrain.</p>
       <div class="selectorPanel noPrint">
-        <div class="selectorPanelHeader">
-          <strong class="small">Relevés analysés</strong>
-          <input class="releveFilter" data-kind="wetland" placeholder="Filtrer par nom, site ou localisation" style="max-width:320px">
+        <details class="selectorDetails" open>
+          <summary class="selectorSummary"><strong class="small">Relevés analysés</strong><span class="selCount"></span></summary>
           <div class="selectorActions">
             <button class="ghost miniBtn" data-kind="wetland" data-select-action="active">Actif seul</button>
             <button class="ghost miniBtn" data-kind="wetland" data-select-action="all">Tout afficher</button>
             <button class="ghost miniBtn" data-kind="wetland" data-select-action="none">Aucun</button>
           </div>
-        </div>
-        <div id="wetlandReleveChecks" class="checkList"></div>
+          <input class="panelSearch releveFilter" data-kind="wetland" placeholder="Filtrer par nom, site ou localisation">
+          <div id="wetlandReleveChecks" class="checkList"></div>
+        </details>
       </div>
       <div id="wetlandSummary" class="wetlandSummary wetlandSummaryReadable"></div>
       <div class="wetlandLayout">
@@ -715,7 +733,7 @@ const STORE_KEY = "botano_baseflor_releves_v03";
 const ADMIN_PASSWORD = "admin"; let adminUnlocked = false;
 const GOOGLE_SYNC_KEY = "botano_baseflor_google_sync_v01";
 const GOOGLE_SHEET_NAME = "Relevés botaniques - données personnelles";
-const APP_VERSION = "v42 · 2026-06-29";
+const APP_VERSION = "v43 · 2026-07-06";
 const GOOGLE_SCOPES = "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/spreadsheets";
 const byId = new Map(TAXA.map(t => [t.id, t]));
 const byName = new Map(TAXA.map(t => [t.n, t]));
@@ -1548,7 +1566,7 @@ function toast(msg, kind){
   }catch(e){ console.log('toast:', msg); }
 }
 /* Numéro de version affiché dans l'en-tête (source unique : APP_VERSION) */
-(function(){try{var t=document.getElementById("appVersionTag"); if(t&&typeof APP_VERSION!=="undefined")t.textContent=APP_VERSION;}catch(e){}})();
+(function(){try{var t=document.getElementById("appVersionTag"); if(t&&typeof APP_VERSION!=="undefined")t.textContent=APP_VERSION; var s=document.getElementById("appVersionShort"); if(s&&typeof APP_VERSION!=="undefined")s.textContent=APP_VERSION.split(" · ")[0];}catch(e){}})();
 setTimeout(function(){try{if(window.__loadCorruption&&typeof toast==="function")toast("Sauvegarde locale illisible : une copie de secours a été conservée. N\u2019ajoutez rien avant d\u2019avoir récupéré vos données.","err");}catch(e){}},900);
 /* Liaison du sélecteur Braun-Blanquet segmenté avec le select masqué #bbValue.
    Le reste de l'application continue de lire #bbValue.value : aucune logique modifiée. */
@@ -1880,6 +1898,8 @@ setTimeout(function(){try{if(window.__loadCorruption&&typeof toast==="function")
     if(!box) return;
     var fit = box.classList.toggle('fitWidth');
     btn.setAttribute('aria-pressed', fit ? 'true' : 'false');
+    var lbl = fit ? 'Détail (taille réelle)' : "Vue d'ensemble";
+    btn.setAttribute('aria-label', lbl); btn.setAttribute('title', lbl);
     var lab = btn.querySelector('.fitLabel');
     if(lab) lab.textContent = fit ? 'Détail' : "Vue d'ensemble";
   });
