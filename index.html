@@ -353,6 +353,18 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
        MODIFIER ICI, pas dans les blocs du dessus. <<<
    ============================================================ */
 .authToggle{display:none}
+/* Sélecteurs de relevés repliables (tous écrans ; ouverts par défaut, refermés sur mobile par script) */
+.selectorDetails{margin:0}
+.selectorDetails > summary.selectorSummary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:650;color:var(--brandDark);padding:2px 0}
+.selectorDetails > summary.selectorSummary::-webkit-details-marker{display:none}
+.selectorDetails > summary.selectorSummary::before{content:"▸";color:var(--brand);font-weight:900;font-size:.9em;transition:transform .15s ease}
+.selectorDetails[open] > summary.selectorSummary::before{transform:rotate(90deg)}
+.selCount{margin-left:auto;font-weight:700;color:var(--muted);font-size:.82rem;white-space:nowrap}
+.selectorDetails > .selectorActions{margin-top:8px}
+/* Bascule « Vue d'ensemble / Détail » du graphique */
+.graphFitBtn{display:none}
+.svgBox.fitWidth{overflow-x:hidden}
+.svgBox.fitWidth svg{min-width:0!important;width:100%!important;height:auto!important}
 @media(max-width:760px){
   /* --- P1 : header réduit à une barre fine collante (~44px) --- */
   :root{--topbar-h:46px}
@@ -385,6 +397,26 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
   /* --- P7 : onglet Saisie — un seul défilement (le tableau du cortège
      ne scrolle plus dans son propre cadre, il suit la page) --- */
   #entry .tableWrap{max-height:none!important}
+  /* --- P8 : compactage des contrôles (boutons, coches, sélecteurs) --- */
+  /* coches à taille normale : elles héritaient de min-height:40px → énormes */
+  input[type=checkbox],input[type=radio]{min-height:0!important;width:18px!important;height:18px!important;flex:0 0 auto;margin:0}
+  .toolbar input[type=checkbox],.toolbar input[type=radio],.checkItem input,.switch input,.compactSwitch input{width:17px!important;height:17px!important}
+  /* barres d'outils graphiques : supprimer l'espaceur vide qui prend une ligne, disposition fluide */
+  .toolbar .grow:empty{display:none!important}
+  .compactToolbar{display:flex!important;flex-wrap:wrap;align-items:center;gap:6px}
+  .compactToolbar > label.small{flex:0 0 auto;margin:0}
+  .compactToolbar > select{flex:1 1 120px;min-width:0;width:auto!important}
+  .compactToolbar > .switch,.compactToolbar > button{flex:0 0 auto;width:auto!important}
+  /* bouton bascule du graphique visible sur mobile */
+  .graphFitBtn{display:inline-flex;align-items:center;gap:5px}
+  /* sélecteurs de relevés repliables : liste plus courte, actions compactes */
+  .selectorDetails > .selectorActions{display:flex;gap:5px}
+  .selectorDetails > .selectorActions .miniBtn{flex:1 1 0;min-width:0;padding:6px 4px}
+  .selectableReleves{max-height:44vh}
+  /* barre de relevé (Saisie) : select pleine largeur, 3 boutons à parts égales */
+  .releveBar{gap:6px}
+  .releveBar .relSelectWrap{width:100%}
+  .releveBar > button{flex:1 1 0;min-width:0}
 }
 /* --- P5 : très petits écrans (<360px) — évite l'entassement des 7 onglets --- */
 @media(max-width:360px){
@@ -492,7 +524,7 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
 
     <div class="card graphWorkspace">
       <div class="toolbar compactToolbar"><div class="grow"></div><label class="small muted">Strate</label><select id="analysisStratum"></select><label class="small muted">Étiquettes</label><select id="gradientLabelMode"><option value="hover" selected>Survol / clic</option><option value="short">Abrégées</option><option value="initials">Initiales</option><option value="none">Masquées</option></select><label class="switch compactSwitch small"><input type="checkbox" class="colorBlindToggle">Daltoniens</label><button class="secondary miniBtn" id="exportGradientsPng">Tout exporter</button></div>
-      <div class="selectorPanel noPrint slimPanel"><div class="selectorPanelHeader"><strong class="small">Relevés affichés</strong><div class="selectorActions"><button class="ghost miniBtn" data-kind="gradient" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="gradient" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="gradient" data-select-action="none">Aucun</button></div></div><input class="panelSearch releveFilter" data-kind="gradient" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="gradientReleveChecks" class="checkList selectableReleves"></div></div>
+      <div class="selectorPanel noPrint slimPanel"><details class="selectorDetails" open><summary class="selectorSummary"><strong class="small">Relevés affichés</strong><span class="selCount"></span></summary><div class="selectorActions"><button class="ghost miniBtn" data-kind="gradient" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="gradient" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="gradient" data-select-action="none">Aucun</button></div><input class="panelSearch releveFilter" data-kind="gradient" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="gradientReleveChecks" class="checkList selectableReleves"></div></details></div>
       <div class="legend legendHelp slimLegend"><span class="key"><span class="pointLegend" style="color:#2f6b3e"></span>Espèce</span><span class="key"><span class="lineLegend" style="color:#2f6b3e"></span>Moyenne pondérée</span><span class="key"><span class="lineLegend dashed" style="color:#2f6b3e"></span>Moyenne simple</span><span class="key"><span class="bandLegend" style="color:#2f6b3e"></span>± écart-type pondéré</span></div>
       <p class="small muted noPrint" style="margin:.2rem 0 .8rem">Chaque gradient peut être replié/déplié. Utiliser le sélecteur de couleur des relevés pour harmoniser les figures.</p>
       <div id="gradientCharts" class="gradientGrid gradientColumn" style="margin-top:10px"></div>
@@ -506,9 +538,9 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
 
     <div class="split">
       <div class="card graphWorkspace">
-        <div class="toolbar compactToolbar"><div class="grow"></div><label class="switch compactSwitch small"><input type="checkbox" class="colorBlindToggle">Daltoniens</label><button class="secondary miniBtn" id="exportScatterPng">Exporter PNG</button></div>
+        <div class="toolbar compactToolbar"><div class="grow"></div><button type="button" class="secondary miniBtn graphFitBtn" data-target="#scatterSvg" aria-pressed="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" stroke-linecap="round"/></svg><span class="fitLabel">Vue d'ensemble</span></button><button class="secondary miniBtn" id="exportScatterPng">Exporter PNG</button></div>
         <div class="settingsGrid noPrint">
-          <div class="selectorPanel slimPanel"><div class="selectorPanelHeader"><strong class="small">Données affichées</strong><div class="selectorActions"><button class="ghost miniBtn" data-kind="scatter" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="scatter" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="scatter" data-select-action="none">Aucun</button></div></div><input class="panelSearch releveFilter" data-kind="scatter" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="scatterReleveChecks" class="checkList selectableReleves"></div><div class="axisControlRow"><label class="small muted">Axe X<select id="xGrad"></select></label><label class="small muted">Axe Y<select id="yGrad"></select></label><label class="small muted">Strate<select id="scatterStratum"></select></label></div></div>
+          <div class="selectorPanel slimPanel"><details class="selectorDetails" open><summary class="selectorSummary"><strong class="small">Données affichées</strong><span class="selCount"></span></summary><div class="selectorActions"><button class="ghost miniBtn" data-kind="scatter" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="scatter" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="scatter" data-select-action="none">Aucun</button></div><input class="panelSearch releveFilter" data-kind="scatter" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="scatterReleveChecks" class="checkList selectableReleves"></div></details><div class="axisControlRow"><label class="small muted">Axe X<select id="xGrad"></select></label><label class="small muted">Axe Y<select id="yGrad"></select></label><label class="small muted">Strate<select id="scatterStratum"></select></label></div></div>
           <div class="selectorPanel slimPanel"><div class="selectorPanelHeader"><strong class="small">Rendu graphique</strong></div><div class="axisControlRow"><label class="small muted">Type<select id="scatterMode"><option value="species">Espèces</option><option value="releves">Moyennes + enveloppe</option></select></label><label class="small muted">Étiquettes<select id="scatterPointLabels"><option value="hover" selected>Survol / clic</option><option value="short">Abrégées filtrées</option><option value="none">Masquées</option></select></label><label class="small muted">Enveloppe<select id="scatterEnvelopeMode"><option value="hull" selected>Bornage floristique</option><option value="sd">Dispersion ± 1 σ</option><option value="both">Bornage + dispersion</option><option value="none">Aucune</option></select></label></div><p class="small muted" style="margin:.45rem 0 0">Astuce : cliquer sur le nom des axes dans le graphique pour faire défiler les indices.</p></div>
         </div>
         <div id="scatterLegend" class="chartLegend"></div>
@@ -529,7 +561,7 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
 
     <div class="card">
       <div class="toolbar"><div class="grow"></div><label class="small muted">Strate</label><select id="compareStratum"></select><button class="secondary miniBtn" id="exportCompareCsv">CSV</button><button class="secondary miniBtn" id="exportCompareXls">Excel</button><button class="secondary miniBtn" id="exportCompareFods">LibreOffice</button></div>
-      <div class="selectorPanel noPrint slimPanel"><div class="selectorPanelHeader"><strong class="small">Relevés affichés</strong><div class="selectorActions"><button class="ghost miniBtn" data-kind="compare" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="compare" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="compare" data-select-action="none">Aucun</button></div></div><input class="panelSearch releveFilter" data-kind="compare" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="compareReleveChecks" class="checkList selectableReleves"></div></div>
+      <div class="selectorPanel noPrint slimPanel"><details class="selectorDetails" open><summary class="selectorSummary"><strong class="small">Relevés affichés</strong><span class="selCount"></span></summary><div class="selectorActions"><button class="ghost miniBtn" data-kind="compare" data-select-action="active">Actif</button><button class="ghost miniBtn" data-kind="compare" data-select-action="all">Tous</button><button class="ghost miniBtn" data-kind="compare" data-select-action="none">Aucun</button></div><input class="panelSearch releveFilter" data-kind="compare" placeholder="Filtrer les relevés par nom, site ou localisation…"><div id="compareReleveChecks" class="checkList selectableReleves"></div></details></div>
       <div class="selectorPanel indexSelector noPrint"><div class="filterTitle"><strong class="small">Indices affichés dans le tableau</strong><div class="selectorActions"><button class="ghost miniBtn" data-kind="compareIndex" data-select-action="all">Tout</button><button class="ghost miniBtn" data-kind="compareIndex" data-select-action="climatiques">Climatiques</button><button class="ghost miniBtn" data-kind="compareIndex" data-select-action="edaphiques">Édaphiques</button><button class="ghost miniBtn" data-kind="compareIndex" data-select-action="none">Aucun</button></div></div><div id="compareIndexChecks" class="checkList"></div></div>
       <div class="tableWrap compactTable"><table id="compareTable" class="comparisonTable"></table></div>
     </div>
@@ -1812,6 +1844,45 @@ setTimeout(function(){try{if(window.__loadCorruption&&typeof toast==="function")
 
   if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", init);
   else init();
+})();
+</script>
+<script>
+/* v43 — sélecteurs de relevés repliables (fermés sur mobile) + compteur coché + bascule graphique */
+(function(){
+  var mq = window.matchMedia('(max-width:760px)');
+  var panels = [].slice.call(document.querySelectorAll('details.selectorDetails'));
+  function syncOpen(){ panels.forEach(function(d){ if(mq.matches){ d.removeAttribute('open'); } else { d.setAttribute('open',''); } }); }
+  syncOpen();
+  if(mq.addEventListener) mq.addEventListener('change', syncOpen);
+  function updateCounts(){
+    panels.forEach(function(d){
+      var list = d.querySelector('.selectableReleves, .checkList');
+      var badge = d.querySelector('.selCount');
+      if(!list || !badge) return;
+      var total = list.querySelectorAll('input[type=checkbox]').length;
+      var on = list.querySelectorAll('input[type=checkbox]:checked').length;
+      badge.textContent = total ? (on + '/' + total) : '';
+    });
+  }
+  updateCounts();
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.matches && e.target.matches('.selectableReleves input, .checkList input')) updateCounts();
+  });
+  panels.forEach(function(d){
+    var l = d.querySelector('.selectableReleves, .checkList');
+    if(l && window.MutationObserver){ new MutationObserver(updateCounts).observe(l, {childList:true, subtree:true}); }
+  });
+  /* bascule Vue d'ensemble / Détail du graphique */
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('.graphFitBtn') : null;
+    if(!btn) return;
+    var box = document.querySelector(btn.getAttribute('data-target'));
+    if(!box) return;
+    var fit = box.classList.toggle('fitWidth');
+    btn.setAttribute('aria-pressed', fit ? 'true' : 'false');
+    var lab = btn.querySelector('.fitLabel');
+    if(lab) lab.textContent = fit ? 'Détail' : "Vue d'ensemble";
+  });
 })();
 </script>
 </body>
