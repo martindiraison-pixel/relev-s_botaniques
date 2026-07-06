@@ -343,15 +343,61 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
 @media(max-width:760px){.wetlandSummaryReadable{grid-template-columns:1fr 1fr}.wetlandGaugeLarge{padding:8px}.wetlandGaugeLarge svg{min-width:980px}.wetlandBlockHead{display:block}.wetlandRegReadable .wetlandCard{padding:10px}.wetlandRegUnifiedWrap .wetlandRegIntro{grid-template-columns:1fr}.wetlandRegArrow{display:none}.wetlandSingleCrossCard{grid-template-columns:1fr}.wetlandSingleCrossCard .statusIcon{width:36px;height:36px}.wetlandRegResultRow{grid-template-columns:1fr}.wetlandRegResultArrow{display:none}.wetlandRegResultCell{border-right:none;border-bottom:1px solid #dfe9da}.wetlandRegResultCell:last-child{border-bottom:none}.wetlandSynthesis{grid-template-columns:1fr;gap:8px}.wetlandSynthesisIcon{display:none}.wetlandStrata{grid-template-columns:1fr}}
 @media(max-width:420px){.wetlandGaugeLarge svg{min-width:900px}}
 </style>
+<style id="mobile-compact-v43">
+/* ============================================================
+   v43 — COUCHE MOBILE CANONIQUE (dernier bloc du <head> = gagne la cascade)
+   Source unique pour le header/topbar et la barre d'onglets du bas sur mobile.
+   Les règles mobiles des <style> précédents (plusieurs @media max-width:760px)
+   sont volontairement neutralisées ici pour ces éléments.
+   >>> Pour tout ajustement du bandeau haut ou de la nav du bas sur smartphone :
+       MODIFIER ICI, pas dans les blocs du dessus. <<<
+   ============================================================ */
+.authToggle{display:none}
+@media(max-width:760px){
+  /* --- P1 : header réduit à une barre fine collante (~44px) --- */
+  :root{--topbar-h:46px}
+  header{padding:7px 12px!important;gap:0!important;position:relative}
+  .headerTop{display:flex;align-items:center;gap:9px;width:100%;min-width:0}
+  .appLogo{width:30px!important;height:30px!important;border-radius:8px!important}
+  .headerTop h1{font-size:1.06rem!important;white-space:nowrap;flex:0 0 auto}
+  .headerDesc{display:none!important}
+  .versionPill{display:none!important}
+  /* bouton 👤 qui déplie la connexion */
+  .authToggle{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;margin-left:auto;width:36px;height:36px;padding:0;border-radius:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;cursor:pointer}
+  .authToggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8}
+  .authToggle:active{background:rgba(255,255,255,.22)}
+  .authToggleCb:checked ~ .headerTop .authToggle{background:#fff;color:#1e3d2c;border-color:#fff}
+  /* connexion repliée en menu déroulant, ouverte au tap */
+  .authBar{display:none!important;position:absolute;top:100%;left:10px;right:10px;margin-top:6px;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px;padding:12px;border-radius:14px;background:#1e3d2c;border:1px solid rgba(255,255,255,.16);box-shadow:0 16px 36px rgba(0,0,0,.36);z-index:80}
+  .authToggleCb:checked ~ .authBar{display:flex!important}
+  /* --- P2 : barre d'onglets du bas fiable — fond opaque, sans backdrop-filter, couche stabilisée --- */
+  .tabs{background:var(--panel)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;border-top:1px solid var(--line)!important;box-shadow:0 -7px 22px rgba(20,50,30,.12)!important;transform:translateZ(0)}
+  /* corrige la couleur héritée du bandeau sombre (illisible sur fond clair) */
+  .tab{color:var(--muted)!important}
+  .tab.active{color:var(--brand)!important}
+}
+/* --- P5 : très petits écrans (<360px) — évite l'entassement des 7 onglets --- */
+@media(max-width:360px){
+  .tabs{gap:1px!important;padding-left:2px!important;padding-right:2px!important}
+  .tab{font-size:.55rem!important;padding:5px 0!important;gap:2px!important;letter-spacing:-.01em}
+  .tab .ti{width:19px;height:19px}
+  .headerTop h1{font-size:1rem!important}
+  .appLogo{width:28px!important;height:28px!important}
+}
+</style>
 </head>
 <body>
 <div class="topbar">
 <header>
+  <input type="checkbox" id="authToggleCb" class="authToggleCb" hidden>
   <div class="headerTop">
     <img class="appLogo" src="./icons/icon.svg" alt="" aria-hidden="true">
     <h1>PhytoScope</h1>
     <p class="headerDesc">Application de saisie de relevés phytosociologiques et de visualisation d’indicateurs écologiques associés.</p>
     <span class="versionPill">bêta · <span id="appVersionTag"></span></span>
+    <label for="authToggleCb" class="authToggle" role="button" tabindex="0" aria-label="Afficher la connexion" title="Connexion">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5.5 19a6.5 6.5 0 0 1 13 0" stroke-linecap="round"/></svg>
+    </label>
   </div>
   <div class="authBar" id="authBar" aria-live="polite"></div>
 </header>
