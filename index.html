@@ -375,6 +375,16 @@ details.wetlandSection:not([open])>.wetlandSectionSummary::after{content:'▼'}
   /* corrige la couleur héritée du bandeau sombre (illisible sur fond clair) */
   .tab{color:var(--muted)!important}
   .tab.active{color:var(--brand)!important}
+  /* --- P6 : anti-débordement horizontal — empêche la page de s'élargir
+     (sinon la barre d'onglets fixée en bas part hors écran, cf. Safari/iPad) --- */
+  html{overflow-x:hidden;overflow-x:clip}
+  main{max-width:100%!important}
+  .grid,.grid2,.grid3,.split,.settingsGrid,.syncGrid,.gradientGrid{grid-template-columns:minmax(0,1fr)!important}
+  .card,.graphWorkspace,.selectorPanel,.view,aside{min-width:0}
+  .checkList,.selectableReleves,.axisControlRow,.svgBox,.tableWrap,.releveBar{max-width:100%;min-width:0}
+  /* --- P7 : onglet Saisie — un seul défilement (le tableau du cortège
+     ne scrolle plus dans son propre cadre, il suit la page) --- */
+  #entry .tableWrap{max-height:none!important}
 }
 /* --- P5 : très petits écrans (<360px) — évite l'entassement des 7 onglets --- */
 @media(max-width:360px){
